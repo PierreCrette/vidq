@@ -17,6 +17,15 @@ level = 0
 findimagedupes = 0
 foldervideo= '.'
 
+def Numeric(numasstring='0'):
+	r = ''
+	for i in range(len(numasstring)):
+		if numasstring[i] in '0123456789': r = r + numasstring[i]
+	rn = float(r)
+	if 'kb/s' in numasstring: rn = rn * 1024
+	if 'Mb/s' in numasstring: rn = rn * 1024 * 1024
+	return rn
+
 #Generate jpg images files for one source video file
 def OneFile(folderv,file,level):
 	#Initialization
@@ -72,8 +81,10 @@ def OneFile(folderv,file,level):
 			while s[k] != '\n': k = k+1
 			bitrate = s[j+2:k]
 			if debug>1: print('bitrate = ' + bitrate)
+	
+	qual = Numeric(bitrate) / (Numeric(height) * Numeric(width))
 							
-	ftarget.write(fvideo + ';' + height + ';' + width + ';' + duration + ';' + bitrate + '\n')
+	ftarget.write(fvideo + ';' + height + ';' + width + ';' + duration + ';' + bitrate + ';' + str(qual) + '\n')
 
 
 
@@ -114,7 +125,7 @@ else:
 	if foldervideo[-1] != "/": foldervideo = foldervideo + "/"
 	target = os.path.normpath(sys.argv[2])
 	ftarget = open(target,'w')
-	ftarget.write('filename;height;width;duration;bitrate\n')
+	ftarget.write('filename;height;width;duration;bitrate;quality index\n')
 
 	print('************************************************************************************')
 	print('* vidq.py ' + foldervideo + ' ' + target)
